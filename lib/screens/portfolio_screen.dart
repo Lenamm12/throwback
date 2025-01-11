@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:myapp/models/element_model.dart';
 import '../models/album_model.dart';
 import '../models/tag_model.dart';
 import 'album_detail_screen.dart';
@@ -6,8 +8,13 @@ import 'album_detail_screen.dart';
 class PortfolioScreen extends StatefulWidget {
   final List<Album> albums;
   final List<Tag> tags;
+  final List<ElementItem> elements;
 
-  const PortfolioScreen({super.key, required this.albums, required this.tags});
+  const PortfolioScreen(
+      {super.key,
+      required this.elements,
+      required this.albums,
+      required this.tags});
 
   @override
   _PortfolioScreenState createState() => _PortfolioScreenState();
@@ -39,52 +46,112 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Life Gallery'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () {
-              _showFilterDialog();
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (_selectedTag.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Chip(
-                label: Text('Filtered by: $_selectedTag'),
-                onDeleted: () => _filterAlbumsByTag(''),
-              ),
-            ),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(8.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.0,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-              ),
-              itemCount: _filteredAlbums.length,
-              itemBuilder: (context, index) {
-                final album = _filteredAlbums[index];
-                return _buildAlbumTile(album);
+        appBar: AppBar(
+          title: const Text('Life Gallery'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () {
+                _showFilterDialog();
               },
             ),
+          ],
+        ),
+        body: Column(
+          children: [
+            if (_selectedTag.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Chip(
+                  label: Text('Filtered by: $_selectedTag'),
+                  onDeleted: () => _filterAlbumsByTag(''),
+                ),
+              ),
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.all(8.0),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.0,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                ),
+                itemCount: _filteredAlbums.length,
+                itemBuilder: (context, index) {
+                  final album = _filteredAlbums[index];
+                  return _buildAlbumTile(album);
+                },
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: SpeedDial(
+          // FAB properties
+          child: Icon(Icons.add),
+          tooltip: 'Add element',
+          onPress: null, // Not needed here
+
+          // Speed dial properties
+          visible: true,
+          closeManually: false,
+          curve: Curves.bounceIn,
+          overlayColor: Colors.black,
+          overlayOpacity: 0.5,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 8.0,
+          shape: CircleBorder(),
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.photo_album),
+              label: 'Create new album',
+              onTap: _createNewAlbum,
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.photo),
+              label: 'Add photo',
+              onTap: _addPhoto,
+            ),
+            SpeedDialChild(
+                child: Icon(Icons.text_fields),
+                label: 'Add text',
+                onTap: _addText)
+            // Add more SpeedDialChild widgets as needed
+          ],
+        ));
+  }
+
+  void _addPhoto() {
+    // TODO: Implement photo addition logic
+  }
+
+  void _addText() {
+    // TODO: Implement text addition logics
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add text'),
+          content: const TextField(
+            decoration: InputDecoration(hintText: "Enter text"),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _createNewAlbum();
-        },
-        tooltip: 'Create new album',
-        child: const Icon(Icons.add),
-      ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Create'),
+              onPressed: () {
+                // TODO: Add new album to the list
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

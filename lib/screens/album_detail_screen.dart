@@ -39,7 +39,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
           // TODO: Implement add media to album functionality
         },
         tooltip: 'Add media to album',
-        child: Icon(Icons.add_photo_alternate),
+        child: const Icon(Icons.add_photo_alternate),
       ),
     );
   }

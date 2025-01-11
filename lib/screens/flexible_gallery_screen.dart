@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/element_model.dart';
+
 class FlexibleGalleryScreen extends StatefulWidget {
   const FlexibleGalleryScreen({super.key});
 
@@ -8,23 +10,23 @@ class FlexibleGalleryScreen extends StatefulWidget {
 }
 
 class _FlexibleGalleryScreenState extends State<FlexibleGalleryScreen> {
-  final List<GalleryItem> _items = [];
+  final List<ElementItem> _items = [];
 
   @override
   void initState() {
     super.initState();
     // Add some initial items for demonstration
-    _items.add(GalleryItem(
-        type: GalleryItemType.image,
+    _items.add(ElementItem(
+        type: ElementItemType.image,
         position: const Offset(20, 100),
         size: const Size(150, 150)));
-    _items.add(GalleryItem(
-        type: GalleryItemType.text,
+    _items.add(ElementItem(
+        type: ElementItemType.text,
         position: const Offset(200, 100),
         size: const Size(100, 50),
-        text: "2023"));
-    _items.add(GalleryItem(
-        type: GalleryItemType.sticker,
+        content: "2023"));
+    _items.add(ElementItem(
+        type: ElementItemType.sticker,
         position: const Offset(50, 300),
         size: const Size(50, 50)));
   }
@@ -47,7 +49,7 @@ class _FlexibleGalleryScreenState extends State<FlexibleGalleryScreen> {
                     item.position += details.delta;
                   });
                 },
-                child: _buildGalleryItem(item),
+                child: _buildElementItem(item),
               ),
             ),
         ],
@@ -60,9 +62,9 @@ class _FlexibleGalleryScreenState extends State<FlexibleGalleryScreen> {
     );
   }
 
-  Widget _buildGalleryItem(GalleryItem item) {
+  Widget _buildElementItem(ElementItem item) {
     switch (item.type) {
-      case GalleryItemType.image:
+      case ElementItemType.image:
         return Container(
           width: item.size.width,
           height: item.size.height,
@@ -72,29 +74,29 @@ class _FlexibleGalleryScreenState extends State<FlexibleGalleryScreen> {
           ),
           child: const Icon(Icons.image, size: 50),
         );
-      case GalleryItemType.text:
+      case ElementItemType.text:
         return Container(
           width: item.size.width,
           height: item.size.height,
           alignment: Alignment.center,
           child: Text(
-            item.text ?? '',
+            item.content ?? '',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         );
-      case GalleryItemType.sticker:
+      case ElementItemType.sticker:
         return SizedBox(
           width: item.size.width,
           height: item.size.height,
           child: const Icon(Icons.star, size: 30, color: Colors.yellow),
         );
-      case GalleryItemType.divider:
+      case ElementItemType.divider:
         return Container(
           width: item.size.width,
           height: 2,
           color: Colors.black,
         );
-      case GalleryItemType.banner:
+      case ElementItemType.banner:
         return Container(
           width: MediaQuery.of(context).size.width,
           height: item.size.height,
@@ -114,27 +116,11 @@ class _FlexibleGalleryScreenState extends State<FlexibleGalleryScreen> {
 
   void _addNewItem() {
     setState(() {
-      _items.add(GalleryItem(
-        type: GalleryItemType.image,
+      _items.add(ElementItem(
+        type: ElementItemType.image,
         position: const Offset(100, 100),
         size: const Size(100, 100),
       ));
     });
   }
 }
-
-class GalleryItem {
-  GalleryItemType type;
-  Offset position;
-  Size size;
-  String? text;
-
-  GalleryItem({
-    required this.type,
-    required this.position,
-    required this.size,
-    this.text,
-  });
-}
-
-enum GalleryItemType { image, text, sticker, divider , banner}

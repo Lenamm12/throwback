@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "867150644744",
+    "project_id": "throwback-724c9",
+    "storage_bucket": "throwback-724c9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867150644744:android:a6538846bf8c47d34373bd",
+        "android_client_info": {
+          "package_name": "de.lenamorawietz.throwback"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCobw5fPsKkSdfoW1PeL1omDcAQfl9AGy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
