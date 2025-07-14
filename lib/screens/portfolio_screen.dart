@@ -17,7 +17,7 @@ class PortfolioScreen extends StatefulWidget {
       required this.tags});
 
   @override
-  _PortfolioScreenState createState() => _PortfolioScreenState();
+  State<PortfolioScreen> createState() => _PortfolioScreenState();
 }
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
@@ -87,7 +87,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         ),
         floatingActionButton: SpeedDial(
           // FAB properties
-          child: Icon(Icons.add),
           tooltip: 'Add element',
           onPress: null, // Not needed here
 
@@ -100,24 +99,26 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 8.0,
-          shape: CircleBorder(),
+          shape: const CircleBorder(),
           children: [
             SpeedDialChild(
-              child: Icon(Icons.photo_album),
+              child: const Icon(Icons.photo_album),
               label: 'Create new album',
               onTap: _createNewAlbum,
             ),
             SpeedDialChild(
-              child: Icon(Icons.photo),
+              child: const Icon(Icons.photo),
               label: 'Add photo',
               onTap: _addPhoto,
             ),
             SpeedDialChild(
-                child: Icon(Icons.text_fields),
+                child: const Icon(Icons.text_fields),
                 label: 'Add text',
                 onTap: _addText)
             // Add more SpeedDialChild widgets as needed
           ],
+          // FAB properties
+          child: const Icon(Icons.add),
         ));
   }
 

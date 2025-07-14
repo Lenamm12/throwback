@@ -7,7 +7,7 @@ class AlbumDetailScreen extends StatefulWidget {
   const AlbumDetailScreen({super.key, required this.album});
 
   @override
-  _AlbumDetailScreenState createState() => _AlbumDetailScreenState();
+  State<AlbumDetailScreen> createState() => _AlbumDetailScreenState();
 }
 
 class _AlbumDetailScreenState extends State<AlbumDetailScreen> {

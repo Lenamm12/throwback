@@ -12,7 +12,7 @@ class TaggingScreen extends StatefulWidget {
   });
 
   @override
-  _TaggingScreenState createState() => _TaggingScreenState();
+  State<TaggingScreen> createState() => _TaggingScreenState();
 }
 
 class _TaggingScreenState extends State<TaggingScreen> {

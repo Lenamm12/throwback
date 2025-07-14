@@ -7,7 +7,7 @@ class AlbumFlipScreen extends StatefulWidget {
   const AlbumFlipScreen({super.key, required this.album});
 
   @override
-  _AlbumFlipScreenState createState() => _AlbumFlipScreenState();
+  State<AlbumFlipScreen> createState() => _AlbumFlipScreenState();
 }
 
 class _AlbumFlipScreenState extends State<AlbumFlipScreen> {

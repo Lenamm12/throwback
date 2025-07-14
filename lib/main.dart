@@ -47,14 +47,14 @@ class MyApp extends StatelessWidget {
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             print('Loading data...');
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             print('Error fetching data: ${snapshot.error}');
             print('Error stack trace: ${snapshot.stackTrace}');
             return Text('Error: ${snapshot.error}');
           } else if (!snapshot.hasData) {
             print('No data received from API');
-            return Text('No data available');
+            return const Text('No data available');
           } else {
             try {
               print('Raw API Response - Albums: ${snapshot.data![0]}');
@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
             } catch (e, stackTrace) {
               print('Error processing API response: $e');
               print('Stack trace: $stackTrace');
-              return Text('Error processing data');
+              return const Text('Error processing data');
             }
           }
         },

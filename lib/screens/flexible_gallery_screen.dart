@@ -6,7 +6,7 @@ class FlexibleGalleryScreen extends StatefulWidget {
   const FlexibleGalleryScreen({super.key});
 
   @override
-  _FlexibleGalleryScreenState createState() => _FlexibleGalleryScreenState();
+  State<FlexibleGalleryScreen> createState() => _FlexibleGalleryScreenState();
 }
 
 class _FlexibleGalleryScreenState extends State<FlexibleGalleryScreen> {

@@ -10,7 +10,7 @@ class PhotoViewScreen extends StatefulWidget {
       {super.key, required this.imageUrl, this.tags = const []});
 
   @override
-  _PhotoViewScreenState createState() => _PhotoViewScreenState();
+  State<PhotoViewScreen> createState() => _PhotoViewScreenState();
 }
 
 class _PhotoViewScreenState extends State<PhotoViewScreen> {
