@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
+import 'photo_model.dart';
 import 'tag_model.dart';
 
 class Album {
   final String id;
   final String name;
-  final List<String> mediaIds;
+  final String description;
+  final String coverImageUrl;
+  final List<Photo> photos;
   final List<Tag> tags;
   final bool isReel;
   final DateTime createdAt;
@@ -13,7 +16,9 @@ class Album {
   Album({
     required this.id,
     required this.name,
-    this.mediaIds = const [],
+    this.description = '',
+    this.coverImageUrl = '',
+    this.photos = const [],
     this.tags = const [],
     this.isReel = false,
     required this.createdAt,
@@ -23,7 +28,9 @@ class Album {
   Album copyWith({
     String? id,
     String? name,
-    List<String>? mediaIds,
+    String? description,
+    String? coverImageUrl,
+    List<Photo>? photos,
     List<Tag>? tags,
     bool? isReel,
     DateTime? createdAt,
@@ -32,7 +39,9 @@ class Album {
     return Album(
       id: id ?? this.id,
       name: name ?? this.name,
-      mediaIds: mediaIds ?? this.mediaIds,
+      description: description ?? this.description,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
+      photos: photos ?? this.photos,
       tags: tags ?? this.tags,
       isReel: isReel ?? this.isReel,
       createdAt: createdAt ?? this.createdAt,
@@ -44,7 +53,9 @@ class Album {
     return {
       'id': id,
       'name': name,
-      'mediaIds': mediaIds,
+      'description': description,
+      'coverImageUrl': coverImageUrl,
+      'photos': photos.map((x) => x.toMap()).toList(),
       'tags': tags.map((x) => x.toMap()).toList(),
       'isReel': isReel,
       'createdAt': createdAt.millisecondsSinceEpoch,
@@ -56,7 +67,9 @@ class Album {
     return Album(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
-      mediaIds: List<String>.from(map['mediaIds'] ?? const []),
+      description: map['description'] ?? '',
+      coverImageUrl: map['coverImageUrl'] ?? '',
+      photos: List<Photo>.from(map['photos']?.map((x) => Photo.fromMap(x)) ?? const []),
       tags: List<Tag>.from(map['tags']?.map((x) => Tag.fromMap(x)) ?? const []),
       isReel: map['isReel'] ?? false,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
@@ -66,7 +79,7 @@ class Album {
 
   @override
   String toString() {
-    return 'Album(id: $id, name: $name, mediaIds: $mediaIds, tags: $tags, isReel: $isReel, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Album(id: $id, name: $name, description: $description, coverImageUrl: $coverImageUrl, photos: $photos, tags: $tags, isReel: $isReel, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -74,23 +87,27 @@ class Album {
     if (identical(this, other)) return true;
 
     return other is Album &&
-      other.id == id &&
-      other.name == name &&
-      listEquals(other.mediaIds, mediaIds) &&
-      listEquals(other.tags, tags) &&
-      other.isReel == isReel &&
-      other.createdAt == createdAt &&
-      other.updatedAt == updatedAt;
+        other.id == id &&
+        other.name == name &&
+        other.description == description &&
+        other.coverImageUrl == coverImageUrl &&
+        listEquals(other.photos, photos) &&
+        listEquals(other.tags, tags) &&
+        other.isReel == isReel &&
+        other.createdAt == createdAt &&
+        other.updatedAt == updatedAt;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-      name.hashCode ^
-      mediaIds.hashCode ^
-      tags.hashCode ^
-      isReel.hashCode ^
-      createdAt.hashCode ^
-      updatedAt.hashCode;
+        name.hashCode ^
+        description.hashCode ^
+        coverImageUrl.hashCode ^
+        photos.hashCode ^
+        tags.hashCode ^
+        isReel.hashCode ^
+        createdAt.hashCode ^
+        updatedAt.hashCode;
   }
 }

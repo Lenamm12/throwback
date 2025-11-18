@@ -50,14 +50,14 @@ class _AlbumFlipScreenState extends State<AlbumFlipScreen> {
         },
         child: PageView.builder(
           controller: _pageController,
-          itemCount: widget.album.mediaIds.length,
+          itemCount: widget.album.photos.length,
           onPageChanged: (int page) {
             setState(() {
               _currentPage = page;
             });
           },
           itemBuilder: (context, index) {
-            return _buildPage(widget.album.mediaIds[index]);
+            return _buildPage(widget.album.photos[index].url);
           },
         ),
       ),
@@ -66,13 +66,26 @@ class _AlbumFlipScreenState extends State<AlbumFlipScreen> {
   }
 
   Widget _buildPage(String mediaId) {
-    // TODO: Replace this with actual media content
-    return Container(
-      color: Colors.grey[200],
-      child: Center(
-        child: Text(
-          'Media $mediaId',
-          style: const TextStyle(fontSize: 24),
+    return Image.network(
+      mediaId,
+      fit: BoxFit.contain,
+      loadingBuilder: (BuildContext context, Widget child,
+          ImageChunkEvent? loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes!
+                : null,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) => const Center(
+        child: Icon(
+          Icons.error,
+          color: Colors.red,
+          size: 50,
         ),
       ),
     );
@@ -84,7 +97,7 @@ class _AlbumFlipScreenState extends State<AlbumFlipScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          widget.album.mediaIds.length,
+          widget.album.photos.length,
           (index) => Container(
             width: 8,
             height: 8,

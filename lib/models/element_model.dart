@@ -1,17 +1,25 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 
 class ElementItem {
   String? id;
   ElementItemType type;
+  // Position and size are stored as percentages (0.0 to 1.0) of the parent container.
+  // The y-coordinate of the position is measured from the bottom of the container.
   Offset position;
   Size size;
+  // For 'album' type, content holds the albumId.
   String? content;
+  List<ElementItem>? children;
 
-  ElementItem(
-      {required this.type,
-      required this.position,
-      required this.size,
-      this.content});
+  ElementItem({
+    this.id,
+    required this.type,
+    required this.position,
+    required this.size,
+    this.content,
+    this.children,
+  });
 
   ElementItem copyWith({
     String? id,
@@ -19,32 +27,81 @@ class ElementItem {
     Offset? position,
     Size? size,
     String? content,
+    List<ElementItem>? children,
   }) {
     return ElementItem(
+      id: id ?? this.id,
       type: type ?? this.type,
       position: position ?? this.position,
       size: size ?? this.size,
       content: content ?? this.content,
+      children: children ?? this.children,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'type': type,
-      'position': position,
-      'size': size,
-      'content': content
+      'type': type.index,
+      'position': {'dx': position.dx, 'dy': position.dy},
+      'size': {'width': size.width, 'height': size.height},
+      'content': content,
+      'children': children?.map((x) => x.toMap()).toList(),
     };
   }
 
-  factory ElementItem.fromMap(Map<String, dynamic> element) {
+  factory ElementItem.fromMap(Map<String, dynamic> map) {
+    final positionMap = map['position'] as Map<String, dynamic>;
+    final sizeMap = map['size'] as Map<String, dynamic>;
+
     return ElementItem(
-        type: element['type'],
-        position: element['position'],
-        size: element['size'],
-        content: element['content']);
+      id: map['id'],
+      type: ElementItemType.values[map['type']],
+      position: Offset(positionMap['dx'] ?? 0.0, positionMap['dy'] ?? 0.0),
+      size: Size(sizeMap['width'] ?? 0.0, sizeMap['height'] ?? 0.0),
+      content: map['content'],
+      children: map['children'] != null
+          ? List<ElementItem>.from(
+              map['children'].map((x) => ElementItem.fromMap(x)))
+          : null,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'ElementItem(id: $id, type: $type, position: $position, size: $size, content: $content, children: $children)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ElementItem &&
+        other.id == id &&
+        other.type == type &&
+        other.position == position &&
+        other.size == size &&
+        other.content == content &&
+        listEquals(other.children, children);
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        type.hashCode ^
+        position.hashCode ^
+        size.hashCode ^
+        content.hashCode ^
+        children.hashCode;
   }
 }
 
-enum ElementItemType { image, text, sticker, divider, banner }
+enum ElementItemType {
+  image, // Klick für Zoom
+  album, // klick zoomt auf Vorderseite, dann durchblättern
+  sticker,
+  divider,
+  banner, // Bannerbild (volle Breite)
+  grid,
+  text
+}

@@ -43,10 +43,13 @@ class _PhotoViewScreenState extends State<PhotoViewScreen> {
           ),
         ],
       ),
-      body: PhotoView(
-        imageProvider: NetworkImage(widget.imageUrl),
-        minScale: PhotoViewComputedScale.contained,
-        maxScale: PhotoViewComputedScale.covered * 2,
+      body: Hero(
+        tag: widget.imageUrl,
+        child: PhotoView(
+          imageProvider: NetworkImage(widget.imageUrl),
+          minScale: PhotoViewComputedScale.contained,
+          maxScale: PhotoViewComputedScale.covered * 2,
+        ),
       ),
       bottomSheet: _buildTagList(),
     );

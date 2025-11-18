@@ -1,0 +1,49 @@
+import 'package:flutter/material.dart';
+import 'package:myapp/l10n/app_localizations.dart';
+import 'package:myapp/notifiers/locale_notifier.dart';
+import 'package:provider/provider.dart';
+
+class LanguageSelectionScreen extends StatelessWidget {
+  const LanguageSelectionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.selectLanguage),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            title: const Text('English'),
+            onTap: () {
+              Provider.of<LocaleNotifier>(context, listen: false)
+                  .setLocale(const Locale('en'));
+            },
+          ),
+          ListTile(
+            title: const Text('Español'),
+            onTap: () {
+              Provider.of<LocaleNotifier>(context, listen: false)
+                  .setLocale(const Locale('es'));
+            },
+          ),
+          ListTile(
+            title: const Text('Deutsch'),
+            onTap: () {
+              Provider.of<LocaleNotifier>(context, listen: false)
+                  .setLocale(const Locale('de'));
+            },
+          ),
+          ListTile(
+            title: const Text('Français'),
+            onTap: () {
+              Provider.of<LocaleNotifier>(context, listen: false)
+                  .setLocale(const Locale('fr'));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

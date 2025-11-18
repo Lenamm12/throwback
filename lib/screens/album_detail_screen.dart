@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models/photo_model.dart';
+import '/screens/photo_view_screen.dart';
 import '../models/album_model.dart';
 
 class AlbumDetailScreen extends StatefulWidget {
@@ -11,17 +13,23 @@ class AlbumDetailScreen extends StatefulWidget {
 }
 
 class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
+  late String _albumName;
+
+  @override
+  void initState() {
+    super.initState();
+    _albumName = widget.album.name;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.album.name),
+        title: Text(_albumName),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {
-              // TODO: Implement edit album functionality
-            },
+            onPressed: _editAlbumName,
           ),
         ],
       ),
@@ -35,13 +43,56 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement add media to album functionality
-        },
+        onPressed: _addMediaToAlbum,
         tooltip: 'Add media to album',
         child: const Icon(Icons.add_photo_alternate),
       ),
     );
+  }
+
+  void _editAlbumName() {
+    String newName = _albumName;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Album Name'),
+          content: TextField(
+            controller: TextEditingController(text: _albumName),
+            onChanged: (value) {
+              newName = value;
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                if (newName.isNotEmpty) {
+                  setState(() {
+                    _albumName = newName;
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addMediaToAlbum() {
+    // TODO: In a real app, you'd use an image picker to select media.
+    // For this example, we'll just add a placeholder.
+    setState(() {
+      widget.album.photos.add(Photo(id: DateTime.now().toString(), url: ""));
+    });
   }
 
   Widget _buildAlbumHeader() {
@@ -51,12 +102,12 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.album.name,
+            _albumName,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8.0),
           Text(
-            '${widget.album.mediaIds.length} items',
+            '${widget.album.photos.length} items',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ],
@@ -90,22 +141,45 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
       ),
-      itemCount: widget.album.mediaIds.length,
+      itemCount: widget.album.photos.length,
       itemBuilder: (context, index) {
-        return _buildMediaThumbnail(widget.album.mediaIds[index]);
+        return _buildMediaThumbnail(widget.album.photos[index].url);
       },
     );
   }
 
   Widget _buildMediaThumbnail(String mediaId) {
-    // TODO: Replace with actual media thumbnail
     return GestureDetector(
       onTap: () {
-        // TODO: Implement media detail view
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PhotoViewScreen(imageUrl: mediaId),
+          ),
+        );
       },
-      child: Container(
-        color: Colors.grey[300],
-        child: const Icon(Icons.photo, size: 50),
+      child: Hero(
+        tag: mediaId,
+        child: Image.network(
+          mediaId,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.photo, size: 50),
+          ),
+        ),
       ),
     );
   }
