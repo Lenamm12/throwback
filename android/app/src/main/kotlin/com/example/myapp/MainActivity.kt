@@ -1,4 +1,4 @@
-package com.example.myapp
+package de.jelestudios.throwback
 
 import io.flutter.embedding.android.FlutterActivity
 
