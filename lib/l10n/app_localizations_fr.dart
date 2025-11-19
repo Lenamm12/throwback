@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -31,4 +29,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get french => 'Français';
+
+  @override
+  String get fontSize => 'Taille de la police';
+
+  @override
+  String get colorScheme => 'Palette de couleurs';
+
+  @override
+  String get darkMode => 'Mode sombre';
+
+  @override
+  String get userData => 'Données de l\'utilisateur';
+
+  @override
+  String get signInWithGoogle => 'Connectez-vous avec Google';
+
+  @override
+  String get feedback => 'Retour d\'information';
+
+  @override
+  String get rateThisApp => 'Évaluer cette application';
+
+  @override
+  String get contactUs => 'Contactez-nous';
+
+  @override
+  String get information => 'Information';
+
+  @override
+  String get otherApps => 'Autres applications';
+
+  @override
+  String get ourWebsite => 'Notre site Web';
+
+  @override
+  String get termsOfService => 'Conditions d\'utilisation';
+
+  @override
+  String get privacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get ifYouWantToSaveYourDataAcrossDevicesPleaseSignInWithGoogle => 'Si vous souhaitez enregistrer vos données sur plusieurs appareils, veuillez vous connecter avec Google';
 }

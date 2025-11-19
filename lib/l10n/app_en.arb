@@ -6,5 +6,21 @@
     "english": "English",
     "spanish": "Spanish",
     "german": "German",
-    "french": "French"
+    "french": "French",
+    "fontSize": "Font Size",
+    "colorScheme": "Color Scheme",
+    "darkMode": "Dark Mode",
+    "userData": "User data",
+    "signInWithGoogle": "Sign in with Google",
+    "feedback": "Feedback",
+    "rateThisApp": "Rate this app",
+    "contactUs": "Contact Us",
+    "information": "Information",
+    "otherApps": "Other apps",
+    "ourWebsite": "Our website",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "version": "Version",
+  "ifYouWantToSaveYourDataAcrossDevicesPleaseSignInWithGoogle": "If you want to save your data across devices, please sign in with Google"
+     
 }

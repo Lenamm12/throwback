@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/notifiers/theme_notifier.dart';
+import 'package:provider/provider.dart';
+import 'notifiers/locale_notifier.dart';
 import 'screens/page_screen.dart';
+import 'screens/notifications_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => LocaleNotifier()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -10,13 +24,72 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flexible Gallery',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return Consumer<ThemeNotifier>(builder: (context, theme, locale) {
+      return MaterialApp(
+        title: 'Throwback',
+        theme: theme.currentTheme,
+        locale: locale.locale,
+        supportedLocales: const [
+          Locale('en', ''), // English, no country code
+          Locale('de', ''), // German, no country code
+          Locale('fr', ''), // French, no country code
+          Locale('es', ''), // Spanish, no country code
+        ],
+        home: const MainScreen(),
+      );
+    });
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+  static const List<Widget> _widgetOptions = <Widget>[
+    PageScreen(),
+    NotificationsScreen(),
+    SettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgetOptions,
       ),
-      home: const PageScreen(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.photo_album),
+            label: 'Meine Seite',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Benachrichtigungen',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Einstellungen',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor:
+            themeNotifier.isDarkMode ? Colors.white : Colors.black,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
