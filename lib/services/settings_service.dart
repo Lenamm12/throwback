@@ -33,4 +33,12 @@ class SettingsService {
   Future<void> setIsDarkMode(bool isDarkMode) async {
     await _prefs.setBool('isDarkMode', isDarkMode);
   }
+
+  String getLanguageCode() {
+    return _prefs.getString('languageCode') ?? 'en';
+  }
+
+  Future<void> setLanguageCode(String languageCode) async {
+    await _prefs.setString('languageCode', languageCode);
+  }
 }
