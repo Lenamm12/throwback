@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
-import '../services/settings_service.dart';
 
 class ThemeNotifier with ChangeNotifier {
-  final SettingsService _settingsService;
-  late double _fontSize;
-  late String _colorScheme;
-  late bool _isDarkMode;
-
-  ThemeNotifier(this._settingsService) {
-    _fontSize = _settingsService.getFontSize();
-    _colorScheme = _settingsService.getColorScheme();
-    _isDarkMode = _settingsService.getIsDarkMode();
-  }
+  double _fontSize = 16.0;
+  String _colorScheme = 'Pink';
+  bool _isDarkMode = false;
 
   double get fontSize => _fontSize;
   String get colorScheme => _colorScheme;
@@ -22,6 +14,8 @@ class ThemeNotifier with ChangeNotifier {
     Color primaryColor = _getColor();
     Color secondaryColor = _getSecondaryColor();
 
+    // Define a base text theme with explicit font sizes for all styles
+    // to prevent assertion errors when scaling fonts.
     TextTheme baseTextTheme = const TextTheme(
       displayLarge: TextStyle(fontSize: 57.0),
       displayMedium: TextStyle(fontSize: 45.0),
@@ -40,6 +34,8 @@ class ThemeNotifier with ChangeNotifier {
       labelSmall: TextStyle(fontSize: 11.0),
     );
 
+    // Merge the base text theme with the theme's text theme to inherit colors
+    // and other properties, then apply the font size scaling factor.
     TextTheme newTextTheme = baseTheme.textTheme
         .merge(baseTextTheme)
         .apply(fontSizeFactor: _fontSize / 16.0);
@@ -61,19 +57,16 @@ class ThemeNotifier with ChangeNotifier {
 
   void setFontSize(double fontSize) {
     _fontSize = fontSize;
-    _settingsService.setFontSize(fontSize);
     notifyListeners();
   }
 
   void setColorScheme(String colorScheme) {
     _colorScheme = colorScheme;
-    _settingsService.setColorScheme(colorScheme);
     notifyListeners();
   }
 
   void setDarkMode(bool isDarkMode) {
     _isDarkMode = isDarkMode;
-    _settingsService.setIsDarkMode(isDarkMode);
     notifyListeners();
   }
 
@@ -82,6 +75,8 @@ class ThemeNotifier with ChangeNotifier {
       switch (_colorScheme) {
         case 'Blue':
           return Colors.blue[800]!;
+        // case 'Grey':
+        //   return Colors.grey[400]!;
         case 'Beige':
           return Colors.brown;
         case 'Purple':
@@ -94,6 +89,8 @@ class ThemeNotifier with ChangeNotifier {
       switch (_colorScheme) {
         case 'Blue':
           return Colors.blue;
+        // case 'Grey':
+        //   return Colors.grey[200]!;
         case 'Beige':
           return Colors.brown[300]!;
         case 'Purple':
@@ -110,6 +107,8 @@ class ThemeNotifier with ChangeNotifier {
       switch (_colorScheme) {
         case 'Blue':
           return Colors.blue;
+        // case 'Grey':
+        //   return Colors.grey[200]!;
         case 'Beige':
           return Colors.brown[300]!;
         case 'Purple':
@@ -122,6 +121,8 @@ class ThemeNotifier with ChangeNotifier {
       switch (_colorScheme) {
         case 'Blue':
           return Colors.blue[800]!;
+        // case 'Grey':
+        //   return Colors.grey[800]!;
         case 'Beige':
           return Colors.brown[400]!;
         case 'Purple':

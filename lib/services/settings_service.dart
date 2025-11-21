@@ -1,44 +1,50 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
-  final SharedPreferences _prefs;
-
-  SettingsService._(this._prefs);
-
-  static Future<SettingsService> getInstance() async {
+  Future<void> saveThemeSettings(
+      ThemeMode themeMode, String colorScheme, double fontSize) async {
     final prefs = await SharedPreferences.getInstance();
-    return SettingsService._(prefs);
+    await prefs.setString('themeMode', themeMode.toString());
+    await prefs.setString('colorScheme', colorScheme);
+    await prefs.setDouble('fontSize', fontSize);
   }
 
-  double getFontSize() {
-    return _prefs.getDouble('fontSize') ?? 16.0;
+  Future<void> saveLanguage(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('languageCode', languageCode);
   }
 
-  Future<void> setFontSize(double fontSize) async {
-    await _prefs.setDouble('fontSize', fontSize);
-  }
+  Future<Settings> loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeModeString = prefs.getString('themeMode');
+    final languageCode = prefs.getString('languageCode');
+    final colorScheme = prefs.getString('colorScheme');
+    final fontSize = prefs.getDouble('fontSize');
 
-  String getColorScheme() {
-    return _prefs.getString('colorScheme') ?? 'Pink';
+    return Settings(
+      themeMode: themeModeString == 'ThemeMode.dark'
+          ? ThemeMode.dark
+          : themeModeString == 'ThemeMode.light'
+              ? ThemeMode.light
+              : ThemeMode.system,
+      languageCode: languageCode ?? 'en',
+      colorScheme: colorScheme ?? 'Blue',
+      fontSize: fontSize ?? 16.0,
+    );
   }
+}
 
-  Future<void> setColorScheme(String colorScheme) async {
-    await _prefs.setString('colorScheme', colorScheme);
-  }
+class Settings {
+  final ThemeMode themeMode;
+  final String languageCode;
+  final String colorScheme;
+  final double fontSize;
 
-  bool getIsDarkMode() {
-    return _prefs.getBool('isDarkMode') ?? false;
-  }
-
-  Future<void> setIsDarkMode(bool isDarkMode) async {
-    await _prefs.setBool('isDarkMode', isDarkMode);
-  }
-
-  String getLanguageCode() {
-    return _prefs.getString('languageCode') ?? 'en';
-  }
-
-  Future<void> setLanguageCode(String languageCode) async {
-    await _prefs.setString('languageCode', languageCode);
-  }
+  Settings({
+    required this.themeMode,
+    required this.languageCode,
+    required this.colorScheme,
+    required this.fontSize,
+  });
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/album_model.dart';
 import '../models/element_model.dart';
 import '../models/photo_model.dart';
+import 'element_selection_screen.dart';
+import '../services/auth_service.dart';
 
 class PageScreen extends StatefulWidget {
   const PageScreen({super.key});
@@ -14,11 +16,13 @@ class PageScreen extends StatefulWidget {
 class _PageScreenState extends State<PageScreen> {
   final List<ElementItem> _items = [];
   final List<Album> _albums = [];
+  String? _userName;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _getUserName();
   }
 
   void _loadData() {
@@ -81,35 +85,50 @@ class _PageScreenState extends State<PageScreen> {
     setState(() {});
   }
 
+  void _getUserName() {
+    final user = AuthService().getCurrentUser();
+    if (user != null) {
+      setState(() {
+        _userName = user.displayName;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lena D'),
+        title: Text(_userName ?? 'My Page'),
       ),
       body: LayoutBuilder(builder: (context, constraints) {
-        return Stack(
-          children: [
-            for (var item in _items)
-              Positioned(
-                left: item.position.dx * constraints.maxWidth,
-                top: item.position.dy * constraints.maxHeight,
-                width: item.size.width * constraints.maxWidth,
-                height: item.size.height * constraints.maxHeight,
-                child: GestureDetector(
-                  onPanUpdate: (details) {
-                    setState(() {
-                      final newDx = item.position.dx +
-                          details.delta.dx / constraints.maxWidth;
-                      final newDy = item.position.dy +
-                          details.delta.dy / constraints.maxHeight;
-                      item.position = Offset(newDx, newDy);
-                    });
-                  },
-                  child: _buildElementItem(item),
-                ),
-              ),
-          ],
+        return SingleChildScrollView(
+          child: SizedBox(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight * 2, // Make the page scrollable
+            child: Stack(
+              children: [
+                for (var item in _items)
+                  Positioned(
+                    left: item.position.dx * constraints.maxWidth,
+                    top: item.position.dy * constraints.maxHeight * 2,
+                    width: item.size.width * constraints.maxWidth,
+                    height: item.size.height * constraints.maxHeight * 2,
+                    child: GestureDetector(
+                      onPanUpdate: (details) {
+                        setState(() {
+                          final newDx = item.position.dx +
+                              details.delta.dx / constraints.maxWidth;
+                          final newDy = item.position.dy +
+                              details.delta.dy / (constraints.maxHeight * 2);
+                          item.position = Offset(newDx, newDy);
+                        });
+                      },
+                      child: _buildElementItem(item),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         );
       }),
       floatingActionButton: FloatingActionButton(
@@ -178,14 +197,23 @@ class _PageScreenState extends State<PageScreen> {
     );
   }
 
-  void _addNewItem() {
-    final random = Random();
-    setState(() {
-      _items.add(ElementItem(
-        type: ElementItemType.image,
-        position: Offset(random.nextDouble() * 0.7, random.nextDouble() * 0.7),
-        size: const Size(0.2, 0.2),
-      ));
-    });
+  void _addNewItem() async {
+    final selectedType = await Navigator.push<ElementItemType>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ElementSelectionScreen(),
+      ),
+    );
+
+    if (selectedType != null) {
+      final random = Random();
+      setState(() {
+        _items.add(ElementItem(
+          type: selectedType,
+          position: Offset(random.nextDouble() * 0.7, random.nextDouble() * 0.7),
+          size: const Size(0.2, 0.2),
+        ));
+      });
+    }
   }
 }

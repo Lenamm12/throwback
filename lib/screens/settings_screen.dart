@@ -4,6 +4,7 @@ import '../notifiers/theme_notifier.dart';
 import '../services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/settings_service.dart';
 import 'language_selection_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final SettingsService _settingsService = SettingsService();
+
   Future<void> _signInWithGoogle() async {
     try {
       final userCredential = await AuthService().signInWithGoogle();
@@ -84,139 +87,164 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.settings)),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: <Widget>[
-          Text(
-            AppLocalizations.of(context)!.personalization,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 20),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LanguageSelectionScreen(),
-                ),
-              );
-            },
-            child: Text(AppLocalizations.of(context)!.language),
-          ),
-          const SizedBox(height: 20),
-          Text(
-              '${AppLocalizations.of(context)!.fontSize}: ${themeNotifier.fontSize.toStringAsFixed(1)}'),
-          Slider(
-            value: themeNotifier.fontSize,
-            min: 12.0,
-            max: 24.0,
-            divisions: 6,
-            label: themeNotifier.fontSize.round().toString(),
-            onChanged: (double value) {
-              themeNotifier.setFontSize(value);
-            },
-          ),
-          const SizedBox(height: 20),
-          Text(AppLocalizations.of(context)!.colorScheme),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: colorSchemes.entries.map((entry) {
-              final colorName = entry.key;
-              final color = entry.value;
-              final isSelected = themeNotifier.colorScheme == colorName;
-
-              return GestureDetector(
-                onTap: () => themeNotifier.setColorScheme(colorName),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(8),
-                    border: isSelected
-                        ? Border.all(color: Colors.black, width: 2)
-                        : null,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(AppLocalizations.of(context)!.darkMode),
-              Switch(
-                value: themeNotifier.isDarkMode,
-                onChanged: (bool value) {
-                  themeNotifier.setDarkMode(value);
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                AppLocalizations.of(context)!.personalization,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LanguageSelectionScreen(),
+                    ),
+                  );
                 },
-                thumbColor: WidgetStateProperty.all(
-                  themeNotifier.isDarkMode ? Colors.white : Colors.black,
+                child: Text(AppLocalizations.of(context)!.language),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                  '${AppLocalizations.of(context)!.fontSize}: ${themeNotifier.fontSize.toStringAsFixed(1)}'),
+              Slider(
+                value: themeNotifier.fontSize,
+                min: 12.0,
+                max: 24.0,
+                divisions: 6,
+                label: themeNotifier.fontSize.round().toString(),
+                onChanged: (double value) {
+                  themeNotifier.setFontSize(value);
+                  _settingsService.saveThemeSettings(
+                      themeNotifier.isDarkMode
+                          ? ThemeMode.dark
+                          : ThemeMode.light,
+                      themeNotifier.colorScheme,
+                      value);
+                },
+              ),
+              const SizedBox(height: 20),
+              Text(AppLocalizations.of(context)!.colorScheme),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: colorSchemes.entries.map((entry) {
+                  final colorName = entry.key;
+                  final color = entry.value;
+                  final isSelected = themeNotifier.colorScheme == colorName;
+
+                  return GestureDetector(
+                    onTap: () {
+                      themeNotifier.setColorScheme(colorName);
+                      _settingsService.saveThemeSettings(
+                          themeNotifier.isDarkMode
+                              ? ThemeMode.dark
+                              : ThemeMode.light,
+                          colorName,
+                          themeNotifier.fontSize);
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(8),
+                        border: isSelected
+                            ? Border.all(color: Colors.black, width: 2)
+                            : null,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.darkMode),
+                  Switch(
+                    value: themeNotifier.isDarkMode,
+                    onChanged: (bool value) {
+                      themeNotifier.setDarkMode(value);
+                      _settingsService.saveThemeSettings(
+                          themeNotifier.isDarkMode
+                              ? ThemeMode.dark
+                              : ThemeMode.light,
+                          themeNotifier.colorScheme,
+                          themeNotifier.fontSize);
+                    },
+                    thumbColor: WidgetStateProperty.all(
+                      themeNotifier.isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Text(AppLocalizations.of(context)!.userData,
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 20),
+              Text(
+                AppLocalizations.of(context)!
+                    .ifYouWantToSaveYourDataAcrossDevicesPleaseSignInWithGoogle,
+              ),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _signInWithGoogle,
+                  child: Text(AppLocalizations.of(context)!.signInWithGoogle),
                 ),
               ),
+              const SizedBox(height: 40),
+              Text(AppLocalizations.of(context)!.feedback,
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: rateApp,
+                    child: Text(AppLocalizations.of(context)!.rateThisApp),
+                  ),
+                  TextButton(
+                      onPressed: contactUs,
+                      child: Text(AppLocalizations.of(context)!.contactUs)),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Text(AppLocalizations.of(context)!.information,
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: openPlayStore,
+                    child: Text(AppLocalizations.of(context)!.otherApps),
+                  ),
+                  TextButton(
+                      onPressed: openWeb,
+                      child: Text(AppLocalizations.of(context)!.ourWebsite)),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: termsOfService,
+                    child: Text(AppLocalizations.of(context)!.termsOfService),
+                  ),
+                  TextButton(
+                    onPressed: privacyPolicy,
+                    child: Text(AppLocalizations.of(context)!.privacyPolicy),
+                  ),
+                ],
+              ),
+              Text('${AppLocalizations.of(context)!.version}: 1.0.0'),
             ],
           ),
-          const SizedBox(height: 40),
-          Text(AppLocalizations.of(context)!.userData,
-              style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 20),
-          Text(
-            AppLocalizations.of(context)!
-                .ifYouWantToSaveYourDataAcrossDevicesPleaseSignInWithGoogle,
-          ),
-          Center(
-            child: ElevatedButton(
-              onPressed: _signInWithGoogle,
-              child: Text(AppLocalizations.of(context)!.signInWithGoogle),
-            ),
-          ),
-          const SizedBox(height: 40),
-          Text(AppLocalizations.of(context)!.feedback,
-              style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              TextButton(
-                onPressed: rateApp,
-                child: Text(AppLocalizations.of(context)!.rateThisApp),
-              ),
-              TextButton(
-                  onPressed: contactUs,
-                  child: Text(AppLocalizations.of(context)!.contactUs)),
-            ],
-          ),
-          const SizedBox(height: 40),
-          Text(AppLocalizations.of(context)!.information,
-              style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              TextButton(
-                onPressed: openPlayStore,
-                child: Text(AppLocalizations.of(context)!.otherApps),
-              ),
-              TextButton(
-                  onPressed: openWeb,
-                  child: Text(AppLocalizations.of(context)!.ourWebsite)),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              TextButton(
-                onPressed: termsOfService,
-                child: Text(AppLocalizations.of(context)!.termsOfService),
-              ),
-              TextButton(
-                onPressed: privacyPolicy,
-                child: Text(AppLocalizations.of(context)!.privacyPolicy),
-              ),
-            ],
-          ),
-          Text('${AppLocalizations.of(context)!.version}: 1.0.0'),
-        ],
+        ),
       ),
     );
   }

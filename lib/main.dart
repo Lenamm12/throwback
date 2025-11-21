@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'notifiers/theme_notifier.dart';
 import 'package:provider/provider.dart';
@@ -5,16 +6,17 @@ import 'notifiers/locale_notifier.dart';
 import 'screens/page_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/settings_screen.dart';
-import 'services/settings_service.dart';
+import 'l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final settingsService = await SettingsService.getInstance();
+  await Firebase.initializeApp();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeNotifier(settingsService)),
-        ChangeNotifierProvider(create: (_) => LocaleNotifier(settingsService)),
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => LocaleNotifier()),
       ],
       child: const MyApp(),
     ),
@@ -32,6 +34,12 @@ class MyApp extends StatelessWidget {
         title: 'Throwback',
         theme: theme.currentTheme,
         locale: locale.locale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         supportedLocales: const [
           Locale('en', ''), // English, no country code
           Locale('de', ''), // German, no country code
