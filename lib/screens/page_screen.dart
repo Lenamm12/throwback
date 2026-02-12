@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../element_builder.dart';
 import '../models/album_model.dart';
 import '../models/element_model.dart';
 import '../models/photo_model.dart';
@@ -123,7 +124,7 @@ class _PageScreenState extends State<PageScreen> {
                           item.position = Offset(newDx, newDy);
                         });
                       },
-                      child: _buildElementItem(item),
+                      child: buildElementItem(item),
                     ),
                   ),
               ],
@@ -135,64 +136,6 @@ class _PageScreenState extends State<PageScreen> {
         onPressed: _addNewItem,
         tooltip: 'Add new item',
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Widget _buildElementItem(ElementItem item) {
-    switch (item.type) {
-      case ElementItemType.album:
-        final album = _albums.firstWhere((a) => a.id == item.content,
-            orElse: () => Album(
-                id: 'error',
-                name: 'Unknown Album',
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now()));
-        return _buildAlbumWidget(album);
-      case ElementItemType.image:
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            border: Border.all(color: Colors.black),
-          ),
-          child: const Icon(Icons.image, size: 50),
-        );
-      case ElementItemType.text:
-        return Container(
-          alignment: Alignment.center,
-          child: Text(
-            item.content ?? '',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        );
-      case ElementItemType.sticker:
-        return const Icon(Icons.star, size: 30, color: Colors.yellow);
-      default:
-        return Container(color: Colors.red);
-    }
-  }
-
-  Widget _buildAlbumWidget(Album album) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Image.network(
-              album.coverImageUrl,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              album.name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -210,7 +153,8 @@ class _PageScreenState extends State<PageScreen> {
       setState(() {
         _items.add(ElementItem(
           type: selectedType,
-          position: Offset(random.nextDouble() * 0.7, random.nextDouble() * 0.7),
+          position:
+              Offset(random.nextDouble() * 0.7, random.nextDouble() * 0.7),
           size: const Size(0.2, 0.2),
         ));
       });
