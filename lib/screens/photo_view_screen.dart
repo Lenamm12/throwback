@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import '../models/tag_model.dart';
@@ -46,7 +48,9 @@ class _PhotoViewScreenState extends State<PhotoViewScreen> {
       body: Hero(
         tag: widget.imageUrl,
         child: PhotoView(
-          imageProvider: NetworkImage(widget.imageUrl),
+          imageProvider: widget.imageUrl.startsWith('http')
+              ? NetworkImage(widget.imageUrl)
+              : FileImage(File(widget.imageUrl)) as ImageProvider,
           minScale: PhotoViewComputedScale.contained,
           maxScale: PhotoViewComputedScale.covered * 2,
         ),

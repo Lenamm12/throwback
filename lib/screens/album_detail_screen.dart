@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:myapp/models/photo_model.dart';
-import '/screens/photo_view_screen.dart';
+import 'package:myapp/screens/photo_view_screen.dart';
 import '../models/album_model.dart';
 
 class AlbumDetailScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class AlbumDetailScreen extends StatefulWidget {
 
 class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
   late String _albumName;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -87,12 +91,15 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
     );
   }
 
-  void _addMediaToAlbum() {
-    // TODO: In a real app, you'd use an image picker to select media.
-    // For this example, we'll just add a placeholder.
-    setState(() {
-      widget.album.photos.add(Photo(id: DateTime.now().toString(), url: ""));
-    });
+  void _addMediaToAlbum() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        widget.album.photos
+            .add(Photo(id: DateTime.now().toString(), url: image.path));
+      });
+    }
   }
 
   Widget _buildAlbumHeader() {
@@ -160,21 +167,9 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
       },
       child: Hero(
         tag: mediaId,
-        child: Image.network(
-          mediaId,
+        child: Image.file(
+          File(mediaId),
           fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent? loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
           errorBuilder: (context, error, stackTrace) => Container(
             color: Colors.grey[300],
             child: const Icon(Icons.photo, size: 50),

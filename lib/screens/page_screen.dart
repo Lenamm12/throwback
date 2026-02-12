@@ -141,11 +141,17 @@ class _PageScreenState extends State<PageScreen> {
   }
 
   void _addNewItem() async {
-    final selectedType = await Navigator.push<ElementItemType>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ElementSelectionScreen(),
-      ),
+    final selectedType = await showModalBottomSheet<ElementItemType>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) {
+            return ElementSelectionScreen(scrollController: scrollController);
+          },
+        );
+      },
     );
 
     if (selectedType != null) {
@@ -159,5 +165,17 @@ class _PageScreenState extends State<PageScreen> {
         ));
       });
     }
+  }
+
+  Widget buildElementItem(ElementItem item) {
+    final album = _albums.firstWhere((a) => a.id == item.content,
+        orElse: () => Album(
+            id: '',
+            name: '',
+            description: '',
+            coverImageUrl: '',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now()));
+    return ElementBuilder.build(context, item, album, _albums.indexOf(album));
   }
 }
