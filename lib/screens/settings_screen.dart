@@ -5,7 +5,9 @@ import '../services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/settings_service.dart';
+import 'group_management_screen.dart';
 import 'language_selection_screen.dart';
+import 'section_management_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -183,6 +185,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ],
+              ),
+              ListTile(
+                title: const Text('Group Management'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GroupManagementScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: const Text('Section Management'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SectionManagementScreen(),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 40),
               Text(AppLocalizations.of(context)!.userData,

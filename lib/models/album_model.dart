@@ -1,113 +1,97 @@
-import 'package:flutter/foundation.dart';
-import 'photo_model.dart';
-import 'tag_model.dart';
+import 'dart:ui';
+import 'package:myapp/models/element_model.dart';
+import 'package:myapp/models/photo_model.dart';
+import 'package:myapp/models/tag_model.dart';
 
-class Album {
-  final String id;
+class Album extends ElementItem {
   final String name;
   final String description;
   final String coverImageUrl;
   final List<Photo> photos;
   final List<Tag> tags;
-  final bool isReel;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   Album({
-    required this.id,
+    super.id,
     required this.name,
     this.description = '',
     this.coverImageUrl = '',
     this.photos = const [],
     this.tags = const [],
-    this.isReel = false,
     required this.createdAt,
     required this.updatedAt,
-  });
+    required super.position,
+    required super.size,
+    required super.sectionId,
+  }) : super(
+          type: ElementItemType.album,
+          content: name, // Store name in content field
+        );
 
+  @override
   Album copyWith({
     String? id,
+    ElementItemType? type,
+    Offset? position,
+    Size? size,
+    String? content,
+    String? sectionId,
+    // Album specific fields
     String? name,
     String? description,
     String? coverImageUrl,
     List<Photo>? photos,
     List<Tag>? tags,
-    bool? isReel,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return Album(
       id: id ?? this.id,
-      name: name ?? this.name,
+      name: name ?? (content ?? this.name),
       description: description ?? this.description,
       coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       photos: photos ?? this.photos,
       tags: tags ?? this.tags,
-      isReel: isReel ?? this.isReel,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      position: position ?? this.position,
+      size: size ?? this.size,
+      sectionId: sectionId ?? this.sectionId,
     );
   }
 
+  @override
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = super.toMap();
+    map.addAll({
       'name': name,
       'description': description,
       'coverImageUrl': coverImageUrl,
-      'photos': photos.map((x) => x.toMap()).toList(),
-      'tags': tags.map((x) => x.toMap()).toList(),
-      'isReel': isReel,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
-    };
+      'photos': photos.map((p) => p.toMap()).toList(),
+      'tags': tags.map((t) => t.toMap()).toList(),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    });
+    return map;
   }
 
   factory Album.fromMap(Map<String, dynamic> map) {
     return Album(
-      id: map['id'] ?? '',
+      id: map['id'],
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       coverImageUrl: map['coverImageUrl'] ?? '',
-      photos: List<Photo>.from(map['photos']?.map((x) => Photo.fromMap(x)) ?? const []),
-      tags: List<Tag>.from(map['tags']?.map((x) => Tag.fromMap(x)) ?? const []),
-      isReel: map['isReel'] ?? false,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
+      photos: (map['photos'] as List?)?.map((p) => Photo.fromMap(p)).toList() ??
+          const [],
+      tags: (map['tags'] as List?)?.map((t) => Tag.fromMap(t)).toList() ??
+          const [],
+      createdAt: DateTime.parse(map['createdAt'] ?? ''),
+      updatedAt: DateTime.parse(map['updatedAt'] ?? ''),
+      position:
+          Offset(map['position']?['dx'] ?? 0.0, map['position']?['dy'] ?? 0.0),
+      size: Size(map['size']?['width'] ?? 0.0, map['size']?['height'] ?? 0.0),
+      sectionId: map['sectionId'] ?? '',
     );
-  }
-
-  @override
-  String toString() {
-    return 'Album(id: $id, name: $name, description: $description, coverImageUrl: $coverImageUrl, photos: $photos, tags: $tags, isReel: $isReel, createdAt: $createdAt, updatedAt: $updatedAt)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Album &&
-        other.id == id &&
-        other.name == name &&
-        other.description == description &&
-        other.coverImageUrl == coverImageUrl &&
-        listEquals(other.photos, photos) &&
-        listEquals(other.tags, tags) &&
-        other.isReel == isReel &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        name.hashCode ^
-        description.hashCode ^
-        coverImageUrl.hashCode ^
-        photos.hashCode ^
-        tags.hashCode ^
-        isReel.hashCode ^
-        createdAt.hashCode ^
-        updatedAt.hashCode;
   }
 }

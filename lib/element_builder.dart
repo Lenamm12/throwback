@@ -3,19 +3,19 @@ import 'package:provider/provider.dart';
 
 import 'models/album_model.dart';
 import 'models/element_model.dart';
+import 'models/photo_model.dart';
 import 'notifiers/theme_notifier.dart';
 
 class ElementBuilder {
-  static Widget build(
-      BuildContext context, ElementItem item, Album album, int albumIndex) {
+  static Widget build(BuildContext context, dynamic item) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final isDarkMode = themeNotifier.isDarkMode;
 
     switch (item.type) {
       case ElementItemType.album:
-        return _buildAlbumWidget(album, isDarkMode);
+        return _buildAlbumWidget(item, isDarkMode);
       case ElementItemType.image:
-        return _buildPhotoWidget(isDarkMode);
+        return _buildPhotoWidget(item, isDarkMode);
       case ElementItemType.text:
         return _buildTextWidget(item, isDarkMode);
       case ElementItemType.sticker:
@@ -29,7 +29,7 @@ class ElementBuilder {
     }
   }
 
-  static Widget _buildAlbumWidget(Album album, bool isDarkMode) {
+  static Widget _buildAlbumWidget(Album item, bool isDarkMode) {
     return Card(
       clipBehavior: Clip.antiAlias,
       color: isDarkMode ? Colors.grey[800] : Colors.white,
@@ -38,14 +38,14 @@ class ElementBuilder {
         children: [
           Expanded(
             child: Image.network(
-              album.coverImageUrl,
+              item.coverImageUrl,
               fit: BoxFit.cover,
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              album.name,
+              item.name,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -57,7 +57,7 @@ class ElementBuilder {
     );
   }
 
-  static Widget _buildPhotoWidget(bool isDarkMode) {
+  static Widget _buildPhotoWidget(Photo item, bool isDarkMode) {
     return Container(
       decoration: BoxDecoration(
         color: isDarkMode ? Colors.grey[700] : Colors.white,
@@ -68,7 +68,10 @@ class ElementBuilder {
       ),
       width: 100,
       height: 120,
-      child: Icon(Icons.image, size: 50, color: isDarkMode ? Colors.white : Colors.grey),
+      child: Image.network(
+        item.url,
+        fit: BoxFit.cover,
+      ),
     );
   }
 
@@ -105,7 +108,8 @@ class ElementBuilder {
       children: List.generate(4, (index) {
         return Container(
           color: isDarkMode ? Colors.grey[700] : Colors.grey[200],
-          child: Icon(Icons.image, size: 50, color: isDarkMode ? Colors.white : Colors.grey),
+          child: Icon(Icons.image,
+              size: 50, color: isDarkMode ? Colors.white : Colors.grey),
         );
       }),
     );

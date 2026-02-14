@@ -96,8 +96,12 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
 
     if (image != null) {
       setState(() {
-        widget.album.photos
-            .add(Photo(id: DateTime.now().toString(), url: image.path));
+        widget.album.photos.add(Photo(
+            id: DateTime.now().toString(),
+            url: image.path,
+            position: const Offset(0, 0),
+            size: const Size(10, 10),
+            sectionId: ''));
       });
     }
   }

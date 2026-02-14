@@ -1,5 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'notifiers/edit_mode_notifier.dart';
+import 'notifiers/group_provider.dart';
+import 'notifiers/section_provider.dart';
 import 'notifiers/theme_notifier.dart';
 import 'package:provider/provider.dart';
 import 'notifiers/locale_notifier.dart';
@@ -17,6 +20,9 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => LocaleNotifier()),
+        ChangeNotifierProvider(create: (_) => EditModeNotifier()),
+        ChangeNotifierProvider(create: (_) => GroupProvider()),
+        ChangeNotifierProvider(create: (_) => SectionProvider()),
       ],
       child: const MyApp(),
     ),
@@ -60,10 +66,10 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   static const List<Widget> _widgetOptions = <Widget>[
-    PageScreen(),
     NotificationsScreen(),
+    PageScreen(),
     SettingsScreen(),
   ];
 
@@ -84,12 +90,12 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.photo_album),
-            label: 'Meine Seite',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
             label: 'Benachrichtigungen',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.photo_album),
+            label: 'Meine Seite',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
